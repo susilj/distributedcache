@@ -8,6 +8,8 @@ namespace mysql_distributedcache.Models
         public User()
         {
             Createdtime = DateTime.UtcNow;
+
+            SubscriptionActive = 1;
         }
 
         public int Id { get; set; }
@@ -23,5 +25,7 @@ namespace mysql_distributedcache.Models
         public DateTime Createdtime { get; set; }
         
         public sbyte Deleted { get; set; }
+
+        public sbyte SubscriptionActive { get; set; }
     }
 }

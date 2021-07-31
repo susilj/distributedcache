@@ -32,6 +32,13 @@ namespace mysql_distributedcache.Service
             return user;
         }
 
+        public async Task<User> GetUser(string email)
+        {
+            User user = await userRepo.GetFirstOrDefaultAsync(predicate: u => u.Email == email);
+
+            return user;
+        }
+
         public async Task<bool> Insert(User user)
         {
             await userRepo.InsertAsync(user);
@@ -41,12 +48,34 @@ namespace mysql_distributedcache.Service
             return inserted > 0;
         }
 
+        public async Task<bool> Delete(User user)
+        {
+            user.Deleted = 1;
+
+            userRepo.Update(user);
+
+            int deleted = await unitOfWork.SaveChangesAsync();
+
+            return deleted > 0;
+        }
+
+        public async Task<bool> DeactivateSubscription(User user)
+        {
+            user.SubscriptionActive = 0;
+
+            userRepo.Update(user);
+
+            int deactivated = await unitOfWork.SaveChangesAsync();
+
+            return deactivated > 0;
+        }
+
         public async Task<IList<User>> FetchAll()
         {
-            int totalUsers = userRepo.Count();
+            int totalUsers = userRepo.Count(predicate: u => u.SubscriptionActive == 1 && u.Deleted == 0);
 
-            IPagedList<User> users = await userRepo.GetPagedListAsync<User>(
-                                                        u => u,
+            IPagedList<User> users = await userRepo.GetPagedListAsync(
+                                                        predicate: u => u.SubscriptionActive == 1 && u.Deleted == 0,
                                                         disableTracking: true,
                                                         pageSize: totalUsers);
 

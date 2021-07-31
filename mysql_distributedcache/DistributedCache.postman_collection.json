@@ -1,0 +1,124 @@
+{
+	"variables": [],
+	"info": {
+		"name": "DistributedCache",
+		"_postman_id": "ec3c21d3-0b41-c87c-c85f-642d2e08ef85",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List User",
+			"request": {
+				"url": "http://localhost:5000/api/User",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "User - Add",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"postman.setEnvironmentVariable(\"token\", jsonData.token);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:5000/api/User",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"testuser\",\n  \"username\": \"test\",\n  \"email\": \"testuser@test.com\",\n  \"passwordhash\": \"Test@123\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.environment.set(\"jwt_token\", response.token);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:5000/api/Account/Login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"testuser@test.com\",\n\t\"password\": \"Test@123\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "DeactivateSubscription",
+			"request": {
+				"url": "http://localhost:5000/api/User/deactivatesubscription/testuser@test.com",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJ0ZXN0dXNlciIsIm5iZiI6MTYyNzc0NjYwMiwiZXhwIjoxNjI3NzUwMjAyLCJpYXQiOjE2Mjc3NDY2MDJ9.sRXM1jWp6mRVIZ6lFl416eiUN_MTzRgzS2AyDj-Szis",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Home",
+			"request": {
+				"url": "http://localhost:5000/api/Home",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJ0ZXN0dXNlciIsIm5iZiI6MTYyNzc0NjYwMiwiZXhwIjoxNjI3NzUwMjAyLCJpYXQiOjE2Mjc3NDY2MDJ9.sRXM1jWp6mRVIZ6lFl416eiUN_MTzRgzS2AyDj-Szis",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

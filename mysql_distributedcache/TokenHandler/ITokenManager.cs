@@ -13,6 +13,6 @@ namespace mysql_distributedcache.TokenHandler
 
         Task DeactivateAsync(string token);
 
-        Task CacheToken(string key, string value);
+        //Task CacheToken(string key, string value);
     }
 }

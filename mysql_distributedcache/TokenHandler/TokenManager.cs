@@ -3,10 +3,7 @@ namespace mysql_distributedcache.TokenHandler
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Distributed;
-    using Microsoft.Extensions.Primitives;
     using System;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     public class TokenManager : ITokenManager
@@ -24,31 +21,24 @@ namespace mysql_distributedcache.TokenHandler
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task CacheToken(string key, string value)
-        {
-            await cache.SetAsync(key, Encoding.ASCII.GetBytes(value), new DistributedCacheEntryOptions
-            {
-                SlidingExpiration = TimeSpan.FromMinutes(1),
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(360)
-            });
-        }
-
         public async Task DeactivateAsync(string token)
-            => await cache.SetStringAsync(GetKey(token),
+        {
+            await cache.SetStringAsync(GetKey(token),
                     " ", new DistributedCacheEntryOptions
                     {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2)
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(20)
                     });
+        }
 
         public async Task DeactivateCurrentAsync()
             => await DeactivateAsync(GetCurrentAsync());
 
         public async Task<bool> IsActiveAsync(string token)
         {
-            var key = GetKey(token);
+            string key = GetKey(token);
 
-            var tokenvalue = await cache.GetStringAsync(key);
-            
+            string tokenvalue = await cache.GetStringAsync(key);
+
             return tokenvalue == null;
         }
 
@@ -57,14 +47,15 @@ namespace mysql_distributedcache.TokenHandler
 
         private string GetCurrentAsync()
         {
-            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
+            httpContextAccessor.HttpContext.Items.TryGetValue("userId", out object userId);
 
-            return authorizationHeader == StringValues.Empty
-                                            ? string.Empty
-                                            : authorizationHeader.Single().Split(" ").Last();
+            if (userId == null)
+                return string.Empty;
+
+            return userId.ToString();
         }
 
         private static string GetKey(string token)
-            => $"tokens:{token}:deactivated";
+            => $"tokens{token}deactivated";
     }
 }

@@ -23,18 +23,13 @@ namespace mysql_distributedcache.Controllers
 
         private readonly IConfiguration configuration;
 
-        private readonly ITokenManager tokenManager;
-
         public AccountController(
             UserService userService,
-            IConfiguration configuration,
-            ITokenManager tokenManager)
+            IConfiguration configuration)
         {
             this.userService = userService;
 
             this.configuration = configuration;
-
-            this.tokenManager = tokenManager;
         }
 
         [HttpPost]
@@ -59,8 +54,6 @@ namespace mysql_distributedcache.Controllers
                 UserName = user.Username,
                 Token = token
             };
-
-            await tokenManager.CacheToken(user.Id.ToString(), token);
 
             return Ok(response);
         }

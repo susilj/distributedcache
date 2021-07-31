@@ -25,7 +25,7 @@ namespace mysql_distributedcache.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
             {
@@ -43,6 +43,12 @@ namespace mysql_distributedcache.Middleware
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
+
+                JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+
+                string userId = jwtToken.Claims.First(x => x.Type == "nameid").Value;
+
+                context.Items["userId"] = userId;
             }
 
             await _next(context);

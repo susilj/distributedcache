@@ -1,0 +1,6 @@
+﻿dotnet ef migrations add InitialCreate
+dotnet ef database update 
+dotnet ef migrations add AddUserSubscriptionActiveProperty
+dotnet ef database update
+
+dotnet mysql-cache create "Data Source=localhost;Initial Catalog=dcache;user id=root;Password=root@123;" dbo authtokencache
